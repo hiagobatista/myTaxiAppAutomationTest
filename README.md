@@ -15,4 +15,4 @@ Automated tests for an adroind application using framework Espresso with BDD too
 
 ## Documments
 
-In the Documments folder there is a pdf file describing additional scenarios that should be tested and possible improvements to be implemented on this application.
+In the Documments folder there is a plain text file describing additional scenarios that should be tested and possible improvements to be implemented on this application.
