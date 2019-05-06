@@ -1,0 +1,20 @@
+myTaxiAppAutomation
+
+## Additional Tests ##
+
+1. Accessibility Testing to ensure the application is accessible to the people having disabilities;
+2. Usability and Performance Testing in different devices to check how the application behaves on these configurations;
+3. Globalization testing to verify the application is scalable to different countries, languages and cultures;
+4. Localization testing to guarantee that the application meets specific standards of a country.
+
+## Possible Improvements ##
+
+1. Communication:
+    * Add different error messages on login screen: empty fields, invalid data entered, incorrect credentials;
+    * Show no results message when user searches for a non-existing driver.
+2. Usability:
+    * Username is not visible on tools drawer (yellow background with white font makes text dull);
+    * On main screen the keyboard should be automatically closed when user clicks on tool bar;
+    * Tool bar should be accessible from Driver Profile screen;
+    * Driver Profile screen should have more relevant information about the driver and use the space available on viewport;
+    * Search input field should have maximum character limitation.
