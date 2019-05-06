@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mytaxi.android_demo.models.Driver;
 import com.mytaxi.android_demo.models.User;
+import com.mytaxi.android_demo.utils.EspressoIdlingResource;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -40,6 +41,7 @@ public class HttpClient {
     }
 
     public void fetchDrivers(final DriverCallback driverCallback) {
+        EspressoIdlingResource.increment();
         int amount = 256;
         String seed = "23f8827e04239990";
         String url = RANDOM_USER_URL + "?results=" + amount + "&seed=" + seed;
@@ -48,6 +50,9 @@ public class HttpClient {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                    EspressoIdlingResource.decrement(); // Set app as idle.
+                }
             }
 
             @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -59,12 +64,16 @@ public class HttpClient {
                     Log.i(LOG_TAG, "Fetched successfully " + drivers.size() + " drivers.");
                     driverCallback.setDrivers(drivers);
                     driverCallback.run();
+                    if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                        EspressoIdlingResource.decrement(); // Set app as idle.
+                    }
                 }
             }
         });
     }
 
     public void fetchUser(String seed, final UserCallback userCallback) {
+        EspressoIdlingResource.increment();
         String url = RANDOM_USER_URL + "?seed=" + seed;
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
@@ -80,6 +89,9 @@ public class HttpClient {
                     if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
                     userCallback.setUser(getUser(responseBody.string()));
                     userCallback.run();
+                    if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                        EspressoIdlingResource.decrement(); // Set app as idle.
+                    }
                 }
             }
         });
