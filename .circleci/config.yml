@@ -18,6 +18,7 @@ jobs:
           #command: sudo chmod +x ./gradlew
       - run:
           name: Download Dependencies
+          working_directory: ~/myTaxiAppAutomationTest/AndroidDemo
           command: |
             sudo chmod +x gradlew
             ./gradlew androidDependencies 
