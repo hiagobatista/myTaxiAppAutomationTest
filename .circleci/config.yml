@@ -9,20 +9,18 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - restore_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      #- restore_cache:
+          #paths:
+            #- ~/.gradle
+          #key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       #- run:
           #name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
           #command: sudo chmod +x ./gradlew
       - run:
           name: Download Dependencies
-          command: |
-                  sudo chmod +x gradlew 
-                  ./gradlew androidDependencies
-                  ls
-                  pwd
+          command: chmod +x ./gradlew
+          command: chmod +x gradlew
+          command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
