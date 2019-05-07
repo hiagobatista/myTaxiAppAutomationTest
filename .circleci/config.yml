@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Download Dependencies
           working_directory: ~/AndroidDemo/app
-          command: ./gradlew androidDependencies
+          command: ./gradlew android
       - save_cache:
           paths:
             - ~/.gradle
