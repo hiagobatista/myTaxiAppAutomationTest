@@ -20,7 +20,7 @@ jobs:
           name: Download Dependencies
           working_directory: ~/myTaxiAppAutomationTest/AndroidDemo
           command: |
-            sudo chmod +x gradlew
+            sudo chmod +x ./gradlew
             ./gradlew androidDependencies 
       - save_cache:
           paths:
