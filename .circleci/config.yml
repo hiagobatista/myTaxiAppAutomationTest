@@ -6,8 +6,11 @@ jobs:
       - image: circleci/android:api-25
     environment:
       JVM_OPTS: -Xmx3200m
-      _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xms1024m -Xmx1536m -XX:MaxMetaspaceSize=1536m"
-      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dkotlin.incremental=false -DdisablePreDex'
+      #_JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xms1024m -Xmx1536m -XX:MaxMetaspaceSize=1536m"
+      #GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dkotlin.incremental=false -DdisablePreDex'
+      SKIP_OKBUCK: true
+      EXTRA_OKBUCK_ARGS: --stacktrace
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - restore_cache:
@@ -18,12 +21,28 @@ jobs:
       - run:
           name: remove local settings
           command: rm local.properties
+      #- run:
+          #name: Setup emulator
+          #command: echo y | sdkmanager "platform-tools" "platforms;android-22" "emulator" "system-images;android-22;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-22;default;armeabi-v7a"
+      #- run:
+          #name: Launch emulator
+          #command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on -gpu off
+          #background: true
+      - restore_cache:
+         keys:
+           - emulator-cache-21
       - run:
           name: Setup emulator
-          command: echo y | sdkmanager "platform-tools" "platforms;android-22" "emulator" "system-images;android-22;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-22;default;armeabi-v7a"
+          command: sdkmanager "system-images;android-21;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;google_apis;armeabi-v7a"
+          shell: "/bin/bash"
+      - save_cache:
+          paths:
+            - ~/.android/avd
+          key: emulator-cache-21
       - run:
           name: Launch emulator
-          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on -gpu off
+          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
+          shell: "/bin/bash"
           background: true
       - run:
           name: Download Dependencies
@@ -35,6 +54,10 @@ jobs:
       - run:
           name: Run all checks
           command: ./gradlew check
+      - run:
+          name: Run okbuck
+          command: SKIP_OKBUCK= ./buckw --version
+          shell: "/bin/bash"
       - run:
           name: Run UI Tests
           command: chmod +x android-wait-for-emulator.sh && ./android-wait-for-emulator.sh && ./gradlew :demo:connectedAndroidTest
