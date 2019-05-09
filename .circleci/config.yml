@@ -14,7 +14,7 @@ jobs:
          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
          command: sudo chmod +x ./gradlew
       - run:
-          name: remove local settings
+          name: Remove local settings
           command: rm local.properties
       #- run:
           #name: Setup emulator
@@ -44,6 +44,9 @@ jobs:
       - run:
           name: Setup Emulator
           command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
+      - run:
+      name: Install libpulse library
+      command: apt-get install libpulse0:i386
       - run:
           name: Run ldconfig
           command: sudo /sbin/ldconfig -v
