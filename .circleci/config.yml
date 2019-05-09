@@ -30,9 +30,9 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Run all checks
-          command: ./gradlew check
+      #- run:
+          #name: Run all checks
+          #command: ./gradlew check
       - run:
           name: Lists installed targets
           command: android list target
@@ -45,8 +45,14 @@ jobs:
           name: Setup Emulator
           command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       - run:
-          name: Install libpulse library
+          name: Install library
           command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
+      - run:
+          name: Install libpulse library
+          command: sudo apt-get install libpulse0
+      - run:
+          name: Install pulseaudio
+          command: sudo apt-get install pulseaudio
       - run:
           name: Run ldconfig
           command: sudo /sbin/ldconfig -v
