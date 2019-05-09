@@ -46,7 +46,7 @@ jobs:
           command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       - run:
           name: Install libpulse library
-          command: sudo apt-get install libz1 libncurses5 libbz2-1.0:i386 libstdc++6 libbz2-1.0
+          command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
       - run:
           name: Run ldconfig
           command: sudo /sbin/ldconfig -v
