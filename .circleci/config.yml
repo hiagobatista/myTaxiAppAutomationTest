@@ -14,8 +14,12 @@ jobs:
          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
          command: sudo chmod +x ./gradlew
       - run:
-          name: Remove local settings
-          command: rm local.properties
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       #- run:
           #name: Setup emulator
           #command: echo y | sdkmanager "platform-tools" "platforms;android-22" "emulator" "system-images;android-22;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-22;default;armeabi-v7a"
@@ -24,82 +28,89 @@ jobs:
           #command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on -gpu off
           #background: true
       - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      #- run:
-          #name: Run all checks
-          #command: ./gradlew check
+          name: Install licenses
+          command: cp licenses/* /opt/android/sdk/licenses/
       - run:
-          name: Lists installed targets
-          command: android list target
-          environment:
-          TERM: dumb
+          name: Approve license for build tools
+          command: (echo y; echo y; echo y; echo y; echo y; echo y) | $ANDROID_HOME/tools/bin/sdkmanager --licenses && sdkmanager --update
       - run:
-          name: Show list of system-images
-          command: sdkmanager --list --verbose | grep system-images
+          name: Setup emulator
+          command: sdkmanager "system-images;android-16;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-16;default;armeabi-v7a"
       - run:
-          name: Setup Emulator
-          command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
-      #- run:
-          #name: Android home
-          #command: |
-                  #cd $ANDROID_HOME;ls
-                  #echo $ANDROID_HOME
-      - run:
-          name: Set Android SDK Root
-          command: export ANDROID_SDK_ROOT=$ANDROID_HOME
-      - run:
-          name: Install library
-          command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
-      - run:
-          name: Install libpulse library
-          command: sudo apt-get install libpulse0
-      - run:
-          name: Install pulseaudio
-          command: sudo apt-get install pulseaudio
-      - run:
-          name: Run ldconfig
-          command: sudo /sbin/ldconfig -v
-      - run:
-          name: Launch Emulator
-          command: |
-                  cd ${ANDROID_HOME}/emulator;ls
-                  export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && sdkmanager --update && emulator -avd test -noaudio -no-boot-anim -no-window -accel on
-                  #export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-                  #emulator64-arm -avd test -no-window -noaudio -no-boot-anim -no-window -accel on
+          name: Run Emulator
           background: true
-          parallel: true
+          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel auto -verbose
       - run:
-          name: Wait emulator
+          name: Wait for Emulator
+          no_output_timeout: 15m
           command: |
+              # wait for it to have booted
               circle-android wait-for-boot
+              # unlock the emulator screen
+              sleep 30
               adb shell input keyevent 82
       - run:
+          name: Run Android Connected Tests
+          command: |
+              export ADB_INSTALL_TIMEOUT=120
+              export ANDROID_HOME=$ANDROID_SDK_ROOT
+              # ./scripts/test.sh
+              ./gradlew assembleDebug
+              # Wait for emulator to fully boot
+              # TODO: Need to create a good check
+              sleep 60
+              # Is the emulator still running?
+              adb devices
+              # Check if package manager is running
+              adb shell pm list packages
+              # Install package
+              $ANDROID_SDK_ROOT/platform-tools/adb install /home/android/androidlearn/app/build/outputs/apk/app-debug.apk
+              ./gradlew connectedAndroidTest
+      - run:
           name: Run Espresso UI Tests
-          command: ./gradlew :app:connectedDebugAndroidTest
+          command: ./gradlew connectedDebugAndroidTest
       - store_artifacts:
           path: app/build/reports
           destination: reports
       - store_test_results:
           path: app/build/test-results
       #- run:
-          #name: Run UI Tests
-          #command: chmod +x android-wait-for-emulator.sh && ./android-wait-for-emulator.sh && ./gradlew :demo:connectedAndroidTest
-      #- store_artifacts:
-          #path: library/build/reports
-          #destination: reports
-      #- store_test_results:
-          #path: library/build/test-results
+          #name: Setup Emulator
+          #command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       #- run:
-          #name: Run Tests
-          #command: ./gradlew lint test
-      #- store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+          #name: Set Android SDK Root
+          #command: export ANDROID_SDK_ROOT=$ANDROID_HOME
+      #- run:
+          #name: Install library
+          #command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
+      #- run:
+          #name: Install libpulse library
+          #command: sudo apt-get install libpulse0
+      #- run:
+          #name: Install pulseaudio
+          #command: sudo apt-get install pulseaudio
+      #- run:
+          #name: Run ldconfig
+          #command: sudo /sbin/ldconfig -v
+      #- run:
+          #name: Launch Emulator
+          #command: |
+                  #cd ${ANDROID_HOME}/emulator;ls
+                  #export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && sdkmanager --update && emulator -avd test -noaudio -no-boot-anim -no-window -accel on
+                  #export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
+                  #emulator64-arm -avd test -no-window -noaudio -no-boot-anim -no-window -accel on
+          #background: true
+          #parallel: true
+      #- run:
+          #name: Wait emulator
+          #command: |
+              #circle-android wait-for-boot
+              #adb shell input keyevent 82
+      #- run:
+          #name: Run Espresso UI Tests
+          #command: ./gradlew :app:connectedDebugAndroidTest
+      #- store_artifacts:
           #path: app/build/reports
           #destination: reports
-      #- store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+      #- store_test_results:
           #path: app/build/test-results
-      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
