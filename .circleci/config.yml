@@ -48,6 +48,9 @@ jobs:
           name: Android home
           command: echo $ANDROID_HOME
       - run:
+          name: Set Android SDK Root
+          command: export ANDROID_SDK_ROOT=$ANDROID_HOME
+      - run:
           name: Install library
           command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
       - run:
