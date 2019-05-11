@@ -43,12 +43,8 @@ jobs:
               --type instrumentation \
               --app app/build/outputs/apk/debug/app-debug.apk \
               --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-              --device model=Nexus5X,\
-              version=26,\
-              locale=en_US,\
-              orientation=portrait \
-              --environment-variables coverage=true,\
-              coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
+              --device model=Nexus5X,version=26,locale=en_US,orientation=portrait \
+              --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
               --directories-to-pull=/sdcard/tmp \
               --timeout 20m
             #sudo gcloud firebase test android run \ 
