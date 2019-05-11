@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Authorize gcloud and set config defaults
           command: |
-            sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            sudo gcloud auth activate-service-account firebase-adminsdk-144gc@app-automation-test.iam.gserviceaccount.com --key-file=${HOME}/gcloud-service-key.json
             sudo gcloud --quiet config set project app-automation-test #${GOOGLE_PROJECT_ID}
       - run:
           name: Test with Firebase Test Lab
