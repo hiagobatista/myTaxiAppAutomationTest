@@ -45,6 +45,9 @@ jobs:
           name: Setup Emulator
           command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       - run:
+          name: Android home
+          command: echo $ANDROID_HOME
+      - run:
           name: Install library
           command: sudo apt-get install libz1 libncurses5 libbz2-1.0 libstdc++6
       - run:
