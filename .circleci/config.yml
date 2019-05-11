@@ -39,10 +39,22 @@ jobs:
       - run:
           name: Test with Firebase Test Lab
           command: >
-            sudo gcloud firebase test android run \ 
-              --app <local_server_path>/<app_apk>.apk \ 
-              --test <local_server_path>/<app_test_apk>.apk \ 
-              --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
+            gcloud firebase test android run \
+              --type instrumentation \
+              --app app/build/outputs/apk/debug/app-debug.apk \
+              --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+              --device model=Nexus5X,\
+              version=26,\
+              locale=en_US,\
+              orientation=portrait \
+              --environment-variables coverage=true,\
+              coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
+              --directories-to-pull=/sdcard/tmp \
+              --timeout 20m
+            #sudo gcloud firebase test android run \ 
+              #--app <local_server_path>/<app_apk>.apk \ 
+              #--test <local_server_path>/<app_test_apk>.apk \ 
+              #--results-bucket cloud-test-${GOOGLE_PROJECT_ID}
       - run:
           name: Install gsutil dependency and copy test results data
           command: |
