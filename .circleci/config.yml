@@ -46,7 +46,9 @@ jobs:
           command: sdkmanager "system-images;android-21;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-21;default;armeabi-v7a"
       - run:
           name: Android home
-          command: echo $ANDROID_HOME
+          command: |
+                  echo $ANDROID_HOME};ls
+                  #echo $ANDROID_HOME
       - run:
           name: Set Android SDK Root
           command: export ANDROID_SDK_ROOT=$ANDROID_HOME
