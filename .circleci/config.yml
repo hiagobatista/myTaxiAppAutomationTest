@@ -51,11 +51,11 @@ jobs:
               #--app <local_server_path>/<app_apk>.apk \ 
               #--test <local_server_path>/<app_test_apk>.apk \ 
               #--results-bucket cloud-test-${GOOGLE_PROJECT_ID}
-      - run:
-          name: Install gsutil dependency and copy test results data
-          command: |
-            sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+      #- run:
+          #name: Install gsutil dependency and copy test results data
+          #command: |
+            #sudo pip install -U crcmod
+            #sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
 #version: 2
 #jobs:
