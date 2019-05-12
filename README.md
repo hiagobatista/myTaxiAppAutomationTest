@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/hiagobatista/myTaxiAppAutomationTest.svg?style=svg&circle-token=cbdf4b85ebafb8f273799f68e5c6b48eb9b462c1)](https://circleci.com/gh/hiagobatista/myTaxiAppAutomationTest)
+
 # MobileAppAutomationTest
 
 Automated tests for an adroind application using framework Espresso with BDD tool Cucumber.
