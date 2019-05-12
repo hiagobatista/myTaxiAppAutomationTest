@@ -9,6 +9,7 @@ import android.test.InstrumentationTestCase;
 
 import com.mytaxi.android_demo.R;
 import com.mytaxi.android_demo.activities.AuthenticationActivity;
+import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.utils.EspressoIdlingResource;
 
 import org.junit.Rule;
@@ -80,36 +81,6 @@ public class AuthenticationActivityTest {
     public void i_should_see_error_message() throws Throwable {
         onView(withId(android.R.id.content)).check(matches(isDisplayed()));
     }
-
-    /*@Test
-    public void loginSuccessfulTest() throws Exception {
-        username = "crazydog335";
-        password = "venture";
-        // Enter username input.
-        onView(ViewMatchers.withId(R.id.edt_username)).perform(typeText(username));
-        // Enter password input.
-        onView(withId(R.id.edt_password)).perform(typeText(password));
-        // Close soft keyboard.
-        closeSoftKeyboard();
-        // Click on login button.
-        onView(withId(R.id.btn_login)).perform(click());
-    }*/
-
-    /*@Test
-    public void loginFailedTest() throws Exception {
-        username = "test";
-        password = "test1234";
-        // Enter username input.
-        onView(withId(R.id.edt_username)).perform(typeText(username));
-        // Enter password input.
-        onView(withId(R.id.edt_password)).perform(typeText(password));
-        // Close soft keyboard.
-        closeSoftKeyboard();
-        // Click on login button.
-        onView(withId(R.id.btn_login)).perform(click());
-        // Validate login failed.
-        onView(withId(android.R.id.content)).check(matches(isDisplayed()));
-    }*/
 
     @After("@login-feature")
     public void tearDown() throws Exception {
